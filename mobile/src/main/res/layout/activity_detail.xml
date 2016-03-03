@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.cs160.joleary.catnip.DetailActivity">
+
+    <ImageView
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:id="@+id/headImageView"
+        android:layout_alignParentTop="true" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Large Text"
+        android:id="@+id/nameTextView"
+        android:layout_toRightOf="@+id/headImageView"/>
+
+    <ImageView
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:id="@+id/partyImageView"
+        android:layout_below="@+id/nameTextView"
+        android:layout_alignParentRight="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Medium Text"
+        android:id="@+id/termEndTextView"
+        android:layout_below="@+id/headImageView"
+        android:layout_centerInParent="true"/>
+
+    <ListView
+        android:layout_width="150dp"
+        android:layout_height="200dp"
+        android:id="@+id/commiteeListView"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"/>
+
+    <TextView
+        android:id="@+id/line"
+        style="?android:attr/listSeparatorTextViewStyle"
+        android:paddingTop="5dip"
+        android:gravity="center_horizontal"
+        android:layout_height="match_parent"
+        android:layout_width="5dp"
+        android:background="#000"
+        android:layout_below="@+id/termEndTextView"
+        android:layout_toRightOf="@+id/commiteeListView"/>
+
+    <ListView
+        android:layout_width="150dp"
+        android:layout_height="200dp"
+        android:id="@+id/billListView"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_toRightOf="@+id/line"/>
+
+    <TextView
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Commitees"
+        android:id="@+id/commiteesTextView"
+        android:gravity="center"
+        android:layout_above="@+id/commiteeListView"
+        android:layout_toStartOf="@+id/line" />
+
+    <TextView
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Bills"
+        android:id="@+id/billsTextView"
+        android:gravity="center"
+        android:layout_above="@+id/billListView"
+        android:layout_toEndOf="@+id/line" />
+</RelativeLayout>
