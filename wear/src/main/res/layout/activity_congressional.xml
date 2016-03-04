@@ -1,28 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent" android:gravity="center" android:layout_gravity="center"
-    tools:context=".CongressionalActivity" android:orientation="vertical" tools:deviceIds="wear_round"
-    android:background="@drawable/food_bg_160">
+    tools:context=".CongressionalActivity" android:orientation="vertical" tools:deviceIds="wear_round">
 
+    <ImageView
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:id="@+id/headImageView"
+        android:layout_gravity="center_horizontal"
+        android:layout_alignTop="@+id/leftButton"
+        android:layout_centerHorizontal="true" />
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Large Text"
         android:id="@+id/nameTextView"
-        android:layout_gravity="center_horizontal" />
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="VOTE"
-        android:id="@+id/vote_btn"
-        android:layout_gravity="center_horizontal" />
+        android:layout_gravity="center_horizontal"
+        android:layout_below="@+id/headImageView"
+        android:layout_centerHorizontal="true" />
 
     <Button
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="New Button"
+        android:layout_height="35dp"
+        android:text="2012 Vote"
         android:id="@+id/electionButton"
-        android:layout_gravity="center_horizontal" />
-</LinearLayout>
+        android:layout_gravity="center_horizontal"
+        android:textSize="14dp"
+        android:layout_below="@+id/nameTextView"
+        android:layout_centerHorizontal="true"
+        android:textAlignment="center" />
+    <Button
+        android:layout_width="20dp"
+        android:layout_height="200dp"
+        android:text=""
+        android:id="@+id/leftButton"
+        android:background="@color/white"
+        android:layout_alignParentLeft="true"
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="0dp"
+        style="@android:style/Widget.Holo.Button.Borderless"/>
+    <Button
+        android:layout_width="20dp"
+        android:layout_height="200dp"
+        android:text=""
+        android:id="@+id/rightButton"
+        android:background="@color/white"
+        android:layout_alignParentRight="true"
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="0dp"
+        style="@android:style/Widget.Holo.Button.Borderless"
+        />
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/view_pager"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        />
+</RelativeLayout>

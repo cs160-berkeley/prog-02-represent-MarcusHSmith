@@ -35,7 +35,7 @@
             </intent-filter>
         </service>
 
-        <activity
+        <!--<activity
             android:name=".CongressionalItemListActivity"
             android:label="@string/title_congressionalitem_list" />
         <activity
@@ -45,7 +45,7 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.cs160.joleary.catnip.CongressionalItemListActivity" />
-        </activity>
+        </activity>-->
         <activity
             android:name=".CongressionalActivity"
             android:label="@string/title_activity_congressional" />

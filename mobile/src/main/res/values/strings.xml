@@ -22,4 +22,5 @@
     <string name="title_congressionalitem_detail">CongressionalItem Detail</string>
     <string name="title_activity_congressional">CongressionalActivity</string>
     <string name="title_activity_detail">DetailActivity</string>
+    <string name="google_app_id">34567</string>
 </resources>

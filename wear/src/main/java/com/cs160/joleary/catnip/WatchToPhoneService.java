@@ -30,6 +30,8 @@ public class WatchToPhoneService extends Service implements GoogleApiClient.Conn
 
     private GoogleApiClient mWatchApiClient;
     private List<Node> nodes = new ArrayList<>();
+    final Service _this = this;
+    private String cat_name;
 
     @Override
     public void onCreate() {
@@ -58,6 +60,10 @@ public class WatchToPhoneService extends Service implements GoogleApiClient.Conn
     @Override //alternate method to connecting: no longer create this in a new thread, but as a callback
     public void onConnected(Bundle bundle) {
         Log.d("T", "in onconnected");
+        //String fromWatch = bundle.getString("CAT_NAME");
+        //Log.d("T", fromWatch);
+        final String holder = this.cat_name;
+
         Wearable.NodeApi.getConnectedNodes(mWatchApiClient)
                 .setResultCallback(new ResultCallback<NodeApi.GetConnectedNodesResult>() {
                     @Override
@@ -66,20 +72,69 @@ public class WatchToPhoneService extends Service implements GoogleApiClient.Conn
                         Log.d("T", "found nodes");
                         //when we find a connected node, we populate the list declared above
                         //finally, we can send a message
-                        sendMessage("/send_toast", "Good job!");
-                        Log.d("T", "sent");
+
+                        sendMessage("/CON", holder);
+                        Log.d("T", "+++++++++++sent " + holder);
+                        //_this.stopSelf();
                     }
                 });
+
     }
 
     @Override //we need this to implement GoogleApiClient.ConnectionsCallback
-    public void onConnectionSuspended(int i) {}
+    public void onConnectionSuspended(int i) {
+        _this.stopSelf();
+    }
 
     private void sendMessage(final String path, final String text ) {
         for (Node node : nodes) {
+            Log.d("A NODE WAS FOUND", "A NODE WAS FOUND");
             Wearable.MessageApi.sendMessage(
                     mWatchApiClient, node.getId(), path, text.getBytes());
         }
     }
 
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        // Which cat do we want to feed? Grab this info from INTENT
+        // which was passed over when we called startService
+
+        Bundle extras = intent.getExtras();
+        final String catName = extras.getString("CAT_NAME");
+        this.cat_name = catName;
+        //
+        onConnected(extras);
+
+        // Send the message with the cat name
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                //first, connect to the apiclient
+                Log.d("onStartCommand", "YLOL");
+                //now that you're connected, send a massage with the cat name
+                mWatchApiClient.connect();
+                //sendMessage("/CON", catName);
+
+            }
+        }).start();
+
+        return START_STICKY;
+    }
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

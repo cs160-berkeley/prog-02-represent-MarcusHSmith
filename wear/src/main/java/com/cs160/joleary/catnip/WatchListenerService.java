@@ -49,7 +49,15 @@ public class WatchListenerService extends WearableListenerService {
             Log.d("T", "about to start watch MainActivity with CAT_NAME: POSITION");
             startActivity(intent);
         } else {
-            super.onMessageReceived( messageEvent );
+            //super.onMessageReceived( messageEvent );
+            String value = new String(messageEvent.getData(), StandardCharsets.UTF_8);
+            Intent intent = new Intent(this, CongressionalActivity.class );
+            intent.addFlags( Intent.FLAG_ACTIVITY_NEW_TASK );
+            //you need to add this flag since you're starting a new activity from a service
+            int valueInt = Integer.parseInt(value);
+            intent.putExtra("CAT_NAME", valueInt);
+            Log.d("T", "about to start watch CongressionalActivity with CAT_NAME: " + value);
+            startActivity(intent);
         }
 
     }

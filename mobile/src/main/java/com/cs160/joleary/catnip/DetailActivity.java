@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.app.Activity;
 import android.text.Html;
+import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -26,9 +27,19 @@ public class DetailActivity extends Activity {
         Candidate c1 = new Candidate(3, "Kevin Buscheck", "R", "kbiker@gmail.com", "www.kevinBuscheck.com", "kevinbuscheck", "YOUR LAST TWEET", "Feb. 2018", new String[]{"Asses of America", "4H of America", "Alcoholic's Annoymous"}, new String[]{"No Child Left Behind", "Legalize Marijuana", "9/11 Conspiracy"});
         this.candidates = new Candidate[]{a1,b1,c1};
 
+        Log.d("T", "YOLO");
 
         Bundle b = getIntent().getExtras();
         int position = b.getInt("position");
+        String fromWatch = b.getString("send_toast");
+
+        //Log.d("T", fromWatch);
+
+        for (String key: b.keySet())
+        {
+            Log.d ("myApplication", key + " is a key in the bundle");
+        }
+
         Candidate current = this.candidates[position];
 
         TextView name = (TextView)findViewById(R.id.nameTextView);
@@ -68,9 +79,15 @@ public class DetailActivity extends Activity {
         String positionString = Integer.toString(position);
         sendIntent.putExtra("POSITION", positionString);
         startService(sendIntent);*/
+
+        Log.d("T", "TRYING TO SEND TO WATCH");
+
         Intent sendIntent = new Intent(getBaseContext(), PhoneToWatchService.class);
-        sendIntent.putExtra("CAT_NAME", "Position");
+        sendIntent.putExtra("CAT_NAME", Integer.toString(position));
         startService(sendIntent);
+
+        Log.d("T", "FINISHED SENDING TO WATCH");
+
 
     }
 
