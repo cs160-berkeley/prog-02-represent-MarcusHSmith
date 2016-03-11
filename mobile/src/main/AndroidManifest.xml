@@ -52,6 +52,9 @@
         <activity
             android:name=".DetailActivity"
             android:label="@string/title_activity_detail"></activity>
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="5e571fa316405c986666e9bea5ce063e6e71358a" />
     </application>
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />

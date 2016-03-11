@@ -1,13 +1,17 @@
 package com.cs160.joleary.catnip;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
+import com.twitter.sdk.android.Twitter;
+import com.twitter.sdk.android.core.AppSession;
+import com.twitter.sdk.android.core.Callback;
+import com.twitter.sdk.android.core.Result;
+import com.twitter.sdk.android.core.TwitterApiClient;
+import com.twitter.sdk.android.core.TwitterAuthConfig;
+
+import cz.msebera.android.httpclient.entity.StringEntity;
+import io.fabric.sdk.android.Fabric;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
@@ -28,6 +32,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Button;
 import android.widget.Toast;
@@ -35,17 +40,26 @@ import android.view.KeyEvent;
 
 import com.loopj.android.http.*;
 import org.json.*;
-import com.loopj.android.http.*;
-
-import org.json.JSONArray;
 import org.json.JSONObject;
-import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
+import com.twitter.sdk.android.core.TwitterCore;
+import com.twitter.sdk.android.core.TwitterException;
+import com.twitter.sdk.android.core.TwitterSession;
+import com.twitter.sdk.android.core.identity.TwitterAuthClient;
+import com.twitter.sdk.android.core.models.Tweet;
+import com.twitter.sdk.android.tweetui.CompactTweetView;
+import com.twitter.sdk.android.tweetui.LoadCallback;
+import com.twitter.sdk.android.tweetui.TweetUtils;
 
 import cz.msebera.android.httpclient.Header;
 
 
 public class LaunchActivity extends Activity {
+
+    // Note: Your consumer key and secret should be obfuscated in your source code before shipping.
+    private static final String TWITTER_KEY = "2qRkKj88jzA0bUbBRaXkJssyo";
+    private static final String TWITTER_SECRET = "qUUQ5GOFF5MBf3ujlXXyXe7uQOt3gH7CsF3qkjY12aDWtnsrui";
+
 
 
     private static final long MINIMUM_DISTANCE_CHANGE_FOR_UPDATES = 1; // in Meters
@@ -55,10 +69,15 @@ public class LaunchActivity extends Activity {
     protected EditText zipcode;
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
+        Fabric.with(this, new Twitter(authConfig));
         setContentView(R.layout.activity_launch);
+
+
 
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         currentLocationButton = (Button) findViewById(R.id.currentLocationButton);
@@ -94,7 +113,7 @@ public class LaunchActivity extends Activity {
                     if (!event.isShiftPressed()) {
                         String rawZipCode = zipcode.getText().toString();
                         Log.d("FIND MY LOCATION FROM ZIPCODE", rawZipCode);
-                        getDistrict(LaunchActivity.this, rawZipCode);
+                        getLegislators(LaunchActivity.this, rawZipCode);
 
                         return true;
                     }
@@ -115,7 +134,7 @@ public class LaunchActivity extends Activity {
         } else {
             Log.d("IT's A NULL", "...");
         }
-        getDistrict(LaunchActivity.this, location.getLongitude(), location.getLatitude());
+        getLegislators(LaunchActivity.this, location.getLongitude(), location.getLatitude());
     }
 
     public static String getCountyNameFromLatLong(Context context, double latitude, double longitude) {
@@ -136,12 +155,12 @@ public class LaunchActivity extends Activity {
 
     }
 
-    public void getDistrict(final Context context, Double latitude, Double longitude ){
+    public void getLegislators(final Context context, Double latitude, Double longitude ){
         RequestParams params = new RequestParams();
         params.put("apikey", "204dda0dd1c441cbbaf7514e87ac1743");
         params.put("latitude", Double.toString(latitude));
         params.put("longitude", Double.toString(longitude));
-        SunlightRestClient.get("districts/locate", params, new JsonHttpResponseHandler() {
+        SunlightRestClient.get("legislators/locate", params, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 Log.d("SUCCESS", response.toString());
@@ -164,28 +183,19 @@ public class LaunchActivity extends Activity {
             }
         });
     }
-    public void getDistrict(final Context context, String zipcode){
+    public void getLegislators(final Context context, String zipcode){
         RequestParams params = new RequestParams();
         params.put("apikey", "204dda0dd1c441cbbaf7514e87ac1743");
         params.put("zip", zipcode);
-        SunlightRestClient.get("districts/locate", params, new JsonHttpResponseHandler() {
+        SunlightRestClient.get("legislators/locate", params, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 Log.d("SUCCESS", response.toString());
 
-                try {
-                    JSONArray resultsArray = (JSONArray) response.getJSONArray("results");
-                    int count = (int) response.get("count");
-                    String[] includedDistricts = new String[count];
-                    for (int i = 0; i < count; i++) {
-                        JSONObject result = resultsArray.getJSONObject(i);
-                        String district = (String) result.getString("district");
-                        includedDistricts[i] = district;
-                    }
-                    getLegislators(context, includedDistricts);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+
+                Intent myNextActivity = new Intent(LaunchActivity.this, CongressionalActivity.class);
+                myNextActivity.putExtra("JSON", response.toString());
+                LaunchActivity.this.startActivity(myNextActivity);
             }
 
             @Override
@@ -195,28 +205,6 @@ public class LaunchActivity extends Activity {
         });
     }
 
-    public void getLegislators(Context context, String[] districts){
-        for (int i = 0; i < districts.length; i++){
-            RequestParams params = new RequestParams();
-            params.put("apikey", "204dda0dd1c441cbbaf7514e87ac1743");
-            params.put("district", Integer.parseInt(districts[i]));
-            Log.d("Params", params.toString());
-            SunlightRestClient.get("legislators", params, new JsonHttpResponseHandler() {
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    Log.d("SUCCESS", response.toString());
-
-                }
-
-                @Override
-                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse){
-                    Log.d("FAILURE", errorResponse.toString());
-                }
-            });
-        }
-
-
-    }
 
 
 
