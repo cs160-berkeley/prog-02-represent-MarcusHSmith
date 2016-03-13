@@ -3,16 +3,22 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="@dimen/congressional_height"
-    android:weightSum="1">
+    android:weightSum="1"
+    android:background="@color/tw__composer_deep_gray"
+    >
 
     <ImageView
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:id="@+id/headImageView" />
+        android:layout_width="140dp"
+        android:layout_height="140dp"
+        android:id="@+id/headImageView"
+        android:gravity="center_horizontal"
+        android:layout_marginLeft="10dp"
+        android:layout_centerVertical="true"
+        android:layout_alignParentStart="true" />
 
     <TextView
         android:layout_width="200dp"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Large Text"
         android:id="@+id/NameTextView"
@@ -35,21 +41,35 @@
         android:layout_alignParentBottom="true"/>
 
     <TextView
-        android:layout_width="10dp"
-        android:layout_height="50dp"
-        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="Large Text"
         android:id="@+id/PartyTextView"
-        android:layout_gravity="center_horizontal" />
+        android:layout_toEndOf="@+id/headImageView"
+        android:layout_below="@+id/nameTextView"
+
+        android:layout_above="@+id/line"/>
 
     <TextView
-        android:layout_width="200dp"
-        android:layout_height="75dp"
+        android:id="@+id/line"
+        style="?android:attr/listSeparatorTextViewStyle"
+        android:paddingTop="5dip"
+        android:layout_width="150dp"
+        android:layout_height="4dp"
+        android:background="#000"
+        android:layout_above="@+id/tweetTextView"
+        android:layout_toRightOf="@+id/headImageView"/>
+
+    <TextView
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="Small Text"
         android:id="@+id/tweetTextView"
-        android:background="#0378EC"
+        android:textSize="10sp"
         android:layout_weight="0.80"
         android:layout_toRightOf="@+id/headImageView"
+        android:layout_toLeftOf="@+id/emailImageButton94"
         android:layout_alignParentBottom="true"/>
 </RelativeLayout>

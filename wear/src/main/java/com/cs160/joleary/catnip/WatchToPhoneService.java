@@ -99,7 +99,7 @@ public class WatchToPhoneService extends Service implements GoogleApiClient.Conn
         // which was passed over when we called startService
 
         Bundle extras = intent.getExtras();
-        final String catName = extras.getString("CAT_NAME");
+        final String catName = extras.getString("JSON");
         this.cat_name = catName;
         //
         onConnected(extras);

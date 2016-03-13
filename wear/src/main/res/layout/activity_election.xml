@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/tw__composer_deep_gray">
 
     <TextView
         android:layout_width="wrap_content"
@@ -9,7 +10,9 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="2012 Election"
         android:id="@+id/titleTextView"
-        android:layout_gravity="center_horizontal" />
+        android:layout_gravity="center_horizontal"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -18,7 +21,8 @@
         android:text="Location"
         android:id="@+id/locationTextView"
         android:layout_gravity="center_horizontal"
-        android:onClick="onShuffleClicked" />
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/titleTextView"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -26,14 +30,20 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Medium Text"
         android:id="@+id/obamaValueTextView"
-        android:layout_gravity="center_horizontal" />
+        android:textColor="@color/blue"
+        android:layout_gravity="center_horizontal"
+        android:layout_alignTop="@+id/space"
+        android:layout_toEndOf="@+id/space" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="OBAMA"
-        android:id="@+id/obamaTextView" />
+        android:textColor="@color/blue"
+        android:id="@+id/obamaTextView"
+        android:layout_alignTop="@+id/space"
+        android:layout_alignEnd="@+id/romeyTextView" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -41,14 +51,20 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Medium Text"
         android:id="@+id/romeyValueTextView"
-        android:layout_gravity="center_horizontal" />
+        android:textColor="@color/red"
+        android:layout_gravity="center_horizontal"
+        android:layout_alignBottom="@+id/space"
+        android:layout_toEndOf="@+id/space" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="ROMEY"
-        android:id="@+id/romeyTextView" />
+        android:id="@+id/romeyTextView"
+        android:textColor="@color/red"
+        android:layout_alignBottom="@+id/space"
+        android:layout_toStartOf="@+id/space" />
 
     <Button
         android:layout_width="wrap_content"
@@ -56,5 +72,15 @@
         android:text="SHUFFLE"
         android:id="@+id/shuffleButton"
         android:layout_gravity="center_horizontal"
-        android:onClick="onShuffleClicked"/>
-</LinearLayout>
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="30dp"
+        android:onClick="onShuffleClicked" />
+
+    <Space
+        android:layout_width="50px"
+        android:layout_height="75px"
+        android:layout_below="@+id/locationTextView"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/space" />
+</RelativeLayout>

@@ -7,7 +7,8 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.cs160.joleary.catnip.DetailActivity">
+    tools:context="com.cs160.joleary.catnip.DetailActivity"
+    android:background="@color/tw__composer_deep_gray">
 
     <ImageView
         android:layout_width="150dp"
@@ -26,8 +27,8 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:id="@+id/partyImageView"
-        android:layout_below="@+id/nameTextView"
-        android:layout_alignParentRight="true" />
+        android:layout_below="@+id/roomTextView"
+        android:layout_toEndOf="@+id/line" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -43,7 +44,8 @@
         android:layout_height="200dp"
         android:id="@+id/commiteeListView"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true"/>
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/commiteesTextView" />
 
     <TextView
         android:id="@+id/line"
@@ -62,7 +64,8 @@
         android:id="@+id/billListView"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:layout_toRightOf="@+id/line"/>
+        android:layout_toRightOf="@+id/line"
+        android:layout_below="@+id/billsTextView" />
 
     <TextView
         android:layout_width="150dp"
@@ -71,8 +74,8 @@
         android:text="Commitees"
         android:id="@+id/commiteesTextView"
         android:gravity="center"
-        android:layout_above="@+id/commiteeListView"
-        android:layout_toStartOf="@+id/line" />
+        android:layout_below="@+id/termEndTextView"
+        android:layout_alignEnd="@+id/line" />
 
     <TextView
         android:layout_width="150dp"
@@ -81,6 +84,15 @@
         android:text="Bills"
         android:id="@+id/billsTextView"
         android:gravity="center"
-        android:layout_above="@+id/billListView"
-        android:layout_toEndOf="@+id/line" />
+        android:layout_below="@+id/termEndTextView"
+        android:layout_toEndOf="@+id/commiteesTextView" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Small Text"
+        android:id="@+id/roomTextView"
+        android:layout_below="@+id/nameTextView"
+        android:layout_toEndOf="@+id/headImageView" />
 </RelativeLayout>

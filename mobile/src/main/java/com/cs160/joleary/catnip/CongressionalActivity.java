@@ -2,6 +2,7 @@ package com.cs160.joleary.catnip;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Layout;
 import android.util.Log;
@@ -74,6 +75,7 @@ public class CongressionalActivity extends Activity {
                 cur.homepage = candidate.getString("website");
                 cur.twitter = candidate.getString("twitter_id");
                 cur.term = candidate.getString("term_end");
+                cur.room = candidate.getString("chamber");
                 getTwitter(cur.twitter, i);
 
                 candidates[i] = cur;
@@ -81,6 +83,17 @@ public class CongressionalActivity extends Activity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
+        Intent sendIntent = new Intent(getBaseContext(), PhoneToWatchService.class);
+        try {
+            response.put("CAT_NAME", Integer.toString(0));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        sendIntent.putExtra("JSON", response.toString());
+        startService(sendIntent);
+
+        Log.d("SEND TO WATCH", response.toString());
 
         final ListView congressionalList = (ListView)findViewById(R.id.congressionalListView);
         final ConArrayAdapter adapter = new ConArrayAdapter(this, candidates, passResponse);

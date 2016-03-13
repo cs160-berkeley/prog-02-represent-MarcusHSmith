@@ -48,7 +48,9 @@ public class PhoneToWatchService extends Service {
         // Which cat do we want to feed? Grab this info from INTENT
         // which was passed over when we called startService
         Bundle extras = intent.getExtras();
-        final String catName = extras.getString("CAT_NAME");
+        final String catName = extras.getString("JSON");
+
+        Log.d("CATNAME:", catName);
 
         // Send the message with the cat name
         new Thread(new Runnable() {
@@ -78,6 +80,7 @@ public class PhoneToWatchService extends Service {
                 for(Node node : nodes.getNodes()) {
                     //we find 'nodes', which are nearby bluetooth devices (aka emulators)
                     //send a message for each of these nodes (just one, for an emulator)
+
                     MessageApi.SendMessageResult result = Wearable.MessageApi.sendMessage(
                             mApiClient, node.getId(), path, text.getBytes() ).await();
                     //4 arguments: api client, the node ID, the path (for the listener to parse),

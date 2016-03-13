@@ -54,9 +54,10 @@ public class WatchListenerService extends WearableListenerService {
             Intent intent = new Intent(this, CongressionalActivity.class );
             intent.addFlags( Intent.FLAG_ACTIVITY_NEW_TASK );
             //you need to add this flag since you're starting a new activity from a service
-            int valueInt = Integer.parseInt(value);
-            intent.putExtra("CAT_NAME", valueInt);
-            Log.d("T", "about to start watch CongressionalActivity with CAT_NAME: " + value);
+            //int valueInt = Integer.parseInt(value);
+
+            intent.putExtra("JSON", value);
+            Log.d("T", "about to start watch CongressionalActivity with JSON: " + value);
             startActivity(intent);
         }
 

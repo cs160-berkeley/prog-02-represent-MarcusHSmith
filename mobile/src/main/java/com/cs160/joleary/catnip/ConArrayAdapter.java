@@ -78,7 +78,7 @@ public class ConArrayAdapter extends BaseAdapter {
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        final LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View conRow = inflater.inflate(R.layout.con_layout, parent, false);
 
         final Candidate current = this.candidates[position];
@@ -90,6 +90,7 @@ public class ConArrayAdapter extends BaseAdapter {
         ImageView headView = (ImageView) conRow.findViewById(R.id.headImageView);
         ImageButton emailView = (ImageButton) conRow.findViewById(R.id.emailImageButton);
         ImageButton homepageView = (ImageButton) conRow.findViewById(R.id.homepageImageButton);
+        TextView line = (TextView) conRow.findViewById(R.id.line);
 
         nameView.setText(current.name);
         partyView.setText(current.party);
@@ -104,40 +105,45 @@ public class ConArrayAdapter extends BaseAdapter {
 
         Log.d("PARTY is:", current.party);
         if (current.party.equals("R")) {
-            Log.d("IT is " , "BLUE");
-            conRow.setBackgroundColor(Color.rgb(0,0,255));
+            line.setBackgroundColor(Color.rgb(0, 0, 255));
+            partyView.setTextColor(Color.rgb(0,0,255));
         } else if (current.party.equals("D")) {
-            Log.d("GONNA MAKE IT", "RED");
             //conRow.setBackgroundColor(0xFF2F329F);
-            conRow.setBackgroundColor(Color.rgb(255,0,0));
+            //conRow.setBackgroundColor(Color.rgb(255,0,0));
+            line.setBackgroundColor(Color.rgb(255,0,0));
+            partyView.setTextColor(Color.rgb(255,0,0));
+        } else {
+            line.setBackgroundColor(Color.rgb(192,192,192));
+            partyView.setTextColor(Color.rgb(192,192,192));
+        }
+        if (current.room.equals("house")){
+            partyView.setText("Representative");
+        } else {
+            partyView.setText("Senator");
         }
 
         conRow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+
+                Log.d("T", "TRYING TO SEND TO WATCH");
+                Log.d("JSON:", response.toString());
+                try {
+                    response.put("CAT_NAME", Integer.toString(position));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                Log.d("JSON:", response.toString());
+
+
                 Toast.makeText(context, current.name, Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(context, DetailActivity.class);
-                Bundle b = new Bundle();
-                b.putInt("position", position);
                 intent.putExtra("JSON", response.toString());
-                intent.putExtras(b);
                 context.startActivity(intent);
             }
-            /*public void onItemClick(AdapterView<?> parent, View v, int position, long id){
-                Intent newActivity = new Intent(this, DetailActivity.class);
-                startActivity(newActivity);
-            }*/
         });
-
         return conRow;
     }
-
-/*    public void congressionalClicked(View v, int position){
-        Intent intent = new Intent(this, DetailActivity.class);
-        //intent.putExtra
-        startActivity(intent);
-    }*/
-
-
 }
 

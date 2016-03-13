@@ -15,6 +15,7 @@ public class Candidate {
     public String head;
     public String term;
     public String twitter;
+    public String room;
     public String[] commitees;
     public String[] bills;
 

@@ -54,9 +54,8 @@ public class PhoneListenerService extends WearableListenerService {
             Intent intent = new Intent(this, DetailActivity.class );
             intent.addFlags( Intent.FLAG_ACTIVITY_NEW_TASK );
             //you need to add this flag since you're starting a new activity from a service
-            int valueInt = Integer.parseInt(value);
-            intent.putExtra("position", valueInt);
-            Log.d("T", "about to start watch DetailActivity with CAT_NAME: " + value);
+            intent.putExtra("JSON", value);
+            Log.d("T", "about to start watch DetailActivity with position: " + value);
             startActivity(intent);
 
 
@@ -68,12 +67,13 @@ public class PhoneListenerService extends WearableListenerService {
         } else {
             //super.onMessageReceived( messageEvent );
             String value = new String(messageEvent.getData(), StandardCharsets.UTF_8);
-            Intent intent = new Intent(this, CongressionalActivity.class );
+            Intent intent = new Intent(this, DetailActivity.class );
             intent.addFlags( Intent.FLAG_ACTIVITY_NEW_TASK );
             //you need to add this flag since you're starting a new activity from a service
-            int valueInt = Integer.parseInt(value);
-            intent.putExtra("CAT_NAME", valueInt);
-            Log.d("T", "about to start watch CongressionalActivity with CAT_NAME: " + value);
+            Log.d("INSIDE THE ELSE", "ELSE");
+            Log.d("POSITION", value);
+            intent.putExtra("JSON", value);
+            Log.d("T", "about to start watch CongressionalActivity with position: " + value);
             startActivity(intent);
         }
 

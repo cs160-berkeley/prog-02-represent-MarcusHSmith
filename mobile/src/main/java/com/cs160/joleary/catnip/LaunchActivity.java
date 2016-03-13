@@ -73,11 +73,10 @@ public class LaunchActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         TwitterAuthConfig authConfig = new TwitterAuthConfig(TWITTER_KEY, TWITTER_SECRET);
         Fabric.with(this, new Twitter(authConfig));
         setContentView(R.layout.activity_launch);
-
-
 
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         currentLocationButton = (Button) findViewById(R.id.currentLocationButton);
@@ -129,15 +128,70 @@ public class LaunchActivity extends Activity {
         if (location != null) {
             String message = String.format("Current Location \n Longitude: %1$s \n Latitude: %2$s", location.getLongitude(), location.getLatitude());
             Toast.makeText(LaunchActivity.this, message, Toast.LENGTH_LONG).show();
-            String county = getCountyNameFromLatLong(LaunchActivity.this, location.getLatitude(), location.getLongitude());
-            Toast.makeText(LaunchActivity.this, county, Toast.LENGTH_LONG).show();
+            Log.d("ABOUT TO GET", "LEGGGGIES");
+            getLegislators(LaunchActivity.this, location.getLatitude(), location.getLongitude());
+            //getCountyNameFromLatLong(LaunchActivity.this, a, response);
         } else {
             Log.d("IT's A NULL", "...");
+            getLegislators(LaunchActivity.this, location.getLatitude(), location.getLongitude());
         }
-        getLegislators(LaunchActivity.this, location.getLongitude(), location.getLatitude());
+
     }
 
-    public static String getCountyNameFromLatLong(Context context, double latitude, double longitude) {
+
+    public void getCountyNameFromLatLong(Context context, Address address, final JSONObject passThrough){
+        Log.d("ABOUT TO TRY", "TRYING NOW");
+        RequestParams params = new RequestParams();
+        params.put("address", address.getLocality().toString());
+        params.put("key", "AIzaSyBufb_k8pfht9kwPjxbzHe1kYxJU7GR2Hw" );
+        Log.d("Address", address.toString());
+        GoogleRestClient.get("", params, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                Log.d("SUCCESSzz", response.toString());
+
+
+
+
+                JSONArray a = null;
+                try {
+                    a = response.getJSONArray("results");
+
+                    Log.d("RESULT: ", a.toString());
+                    JSONObject b = a.getJSONObject(0);
+                    JSONArray c = b.getJSONArray("address_components");
+                    Log.d("address compoent: ", c.toString());
+                    JSONObject d= c.getJSONObject(0);
+                    String city = d.getString("long_name");
+                    Log.d("city", city);
+                    JSONObject t= c.getJSONObject(1);
+                    String county = t.getString("long_name");
+                    Log.d("county", county);
+                    JSONObject f= c.getJSONObject(2);
+                    String state = f.getString("short_name");
+                    Log.d("state", state);
+
+                    passThrough.put("state", state);
+                    passThrough.put("county", county);
+
+                    Intent myNextActivity = new Intent(LaunchActivity.this, CongressionalActivity.class);
+                    myNextActivity.putExtra("JSON", passThrough.toString());
+                    LaunchActivity.this.startActivity(myNextActivity);
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                Log.d("FAILURE", errorResponse.toString());
+            }
+        });
+    }
+
+    public static String getZipcodeFromLatLong(Context context, double latitude, double longitude){
         Geocoder geocoder = new Geocoder(context, Locale.getDefault());
         List<Address> addresses = null;
         try {
@@ -145,19 +199,55 @@ public class LaunchActivity extends Activity {
             Address result;
 
             if (addresses != null && !addresses.isEmpty()) {
-                return addresses.get(0).getLocality();
+
+                return addresses.get(0).getPostalCode();
             }
             return null;
         } catch (IOException ignored) {
             //do something
             return "FAILURE";
         }
-
     }
 
-    public void getLegislators(final Context context, Double latitude, Double longitude ){
+    public static Address getAddressFromLatLong(Context context, double latitude, double longitude){
+        Geocoder geocoder = new Geocoder(context, Locale.getDefault());
+        List<Address> addresses = null;
+        try {
+            addresses = geocoder.getFromLocation(latitude, longitude, 1);
+            Address result;
+
+            if (addresses != null && !addresses.isEmpty()) {
+                return addresses.get(0);
+            }
+            return null;
+        } catch (IOException ignored) {
+            //do something
+            return null;
+        }
+    }
+
+    public static Address getAddressFromZipcode(Context context, String zipcode){
+        Geocoder geocoder = new Geocoder(context, Locale.getDefault());
+        List<Address> addresses = null;
+        try {
+            addresses = geocoder.getFromLocationName(zipcode, 1);
+            Address result;
+
+            if (addresses != null && !addresses.isEmpty()) {
+                return addresses.get(0);
+            }
+            return null;
+        } catch (IOException ignored) {
+            //do something
+            return null;
+        }
+    }
+
+    public void getLegislators(final Context context, final Double latitude, final Double longitude ){
         RequestParams params = new RequestParams();
         params.put("apikey", "204dda0dd1c441cbbaf7514e87ac1743");
+        Log.d("LAT", Double.toString(latitude));
+        Log.d("Lon", Double.toString(longitude));
         params.put("latitude", Double.toString(latitude));
         params.put("longitude", Double.toString(longitude));
         SunlightRestClient.get("legislators/locate", params, new JsonHttpResponseHandler() {
@@ -166,14 +256,9 @@ public class LaunchActivity extends Activity {
                 Log.d("SUCCESS", response.toString());
 
 
-                try {
-                    JSONObject results = response.getJSONObject("results");
-                    String district = results.getString("district");
-                    Log.d("district", district);
-                    //getMembers(context, district)
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+
+                Address a = getAddressFromLatLong(LaunchActivity.this, latitude, longitude);
+                getCountyNameFromLatLong(LaunchActivity.this, a, response);
 
             }
 
@@ -183,7 +268,7 @@ public class LaunchActivity extends Activity {
             }
         });
     }
-    public void getLegislators(final Context context, String zipcode){
+    public void getLegislators(final Context context, final String zipcode){
         RequestParams params = new RequestParams();
         params.put("apikey", "204dda0dd1c441cbbaf7514e87ac1743");
         params.put("zip", zipcode);
@@ -191,11 +276,15 @@ public class LaunchActivity extends Activity {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 Log.d("SUCCESS", response.toString());
+                try {
+                    response.put("ZIPCODE", zipcode);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
 
 
-                Intent myNextActivity = new Intent(LaunchActivity.this, CongressionalActivity.class);
-                myNextActivity.putExtra("JSON", response.toString());
-                LaunchActivity.this.startActivity(myNextActivity);
+                Address a = getAddressFromZipcode(LaunchActivity.this, zipcode);
+                getCountyNameFromLatLong(LaunchActivity.this, a, response);
             }
 
             @Override

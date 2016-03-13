@@ -2,7 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent" android:gravity="center" android:layout_gravity="center"
-    tools:context=".CongressionalActivity" android:orientation="vertical" tools:deviceIds="wear_round">
+    tools:context=".CongressionalActivity" android:orientation="vertical" tools:deviceIds="wear_round"
+    android:background="@color/tw__composer_deep_gray">
 
     <ImageView
         android:layout_width="80dp"

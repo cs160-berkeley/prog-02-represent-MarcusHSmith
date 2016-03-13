@@ -2,6 +2,8 @@ package com.cs160.joleary.catnip;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.app.Activity;
 import android.text.Html;
@@ -12,6 +14,15 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.view.View;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
+import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+
+import com.google.android.gms.drive.Drive;
+import com.google.android.gms.wearable.Asset;
+import com.google.android.gms.wearable.PutDataRequest;
+import com.google.android.gms.wearable.Wearable;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.squareup.picasso.Picasso;
@@ -20,6 +31,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -33,21 +46,26 @@ public class DetailActivity extends Activity {
     public int posBill = 0;
     public String[] comIDs;
     public String[] billNames;
+    public JSONObject response;
+    public int position;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
-        Bundle b = getIntent().getExtras();
-        int position = b.getInt("position");
+        Log.d("IN DETAIL", "DETAIL");
 
-        JSONObject response = null;
+
+        Log.d("IN DETAIL", "DETAIL");
+
         try {
-
-
             response = new JSONObject(getIntent().getStringExtra("JSON"));
-            String passResponse = response.toString();
+
+            Log.d("JSON FROM CONGRESS", response.toString());
+            position = (int) response.getInt("CAT_NAME");
+            Log.d("THE POSITION IS", Integer.toString(position));
+
             Log.d("JSON FROM CONGRESS", response.toString());
             int count = (int) response.getInt("count");
             candidates = new Candidate[count];
@@ -62,6 +80,7 @@ public class DetailActivity extends Activity {
             cur.homepage = candidate.getString("website");
             cur.twitter = candidate.getString("twitter_id");
             cur.term = candidate.getString("term_end");
+            cur.room = candidate.getString("chamber");
             cur.bills = new String[] {"YES", "NO"};
             cur.commitees = new String[] {"YES", "NO"};
             getCommitee(DetailActivity.this, cur);
@@ -74,15 +93,6 @@ public class DetailActivity extends Activity {
         Log.d("T", "YOLO");
 
 
-        String fromWatch = b.getString("send_toast");
-
-        //Log.d("T", fromWatch);
-
-        for (String key: b.keySet())
-        {
-            Log.d ("myApplication", key + " is a key in the bundle");
-        }
-
         Candidate current = this.candidates[position];
 
         TextView name = (TextView)findViewById(R.id.nameTextView);
@@ -93,18 +103,29 @@ public class DetailActivity extends Activity {
         ListView bills = (ListView) findViewById(R.id.billListView);
         TextView commiteesText = (TextView) findViewById(R.id.commiteesTextView);
         TextView billsText = (TextView) findViewById(R.id.billsTextView);
+        TextView room = (TextView) findViewById(R.id.roomTextView);
 
         name.setText(current.name);
         term.setText("TERM END: " + current.term);
         Picasso.with(DetailActivity.this).load("https://theunitedstates.io/images/congress/450x550/" + current.id + ".jpg").into(head);
 
+        room.setText("PENIS");
+
         View root = this.getWindow().getDecorView();
-        if (current.party == "R") {
-            root.setBackgroundColor(0xFFFF0042);
+        if (current.party.equals("R")) {
+            room.setTextColor(Color.rgb(0, 0, 255));
             party.setImageResource(this.getResources().getIdentifier("com.cs160.joleary.catnip:drawable/republican", null, null));
-        } else if (current.party == "D") {
-            root.setBackgroundColor(0xFF2F329F);
+        } else if (current.party.equals("D")) {
+            room.setTextColor(Color.rgb(255, 0, 0));
             party.setImageResource(this.getResources().getIdentifier("com.cs160.joleary.catnip:drawable/democrat", null, null));
+        } else {
+            room.setTextColor(Color.rgb(192,192,192));
+        }
+
+        if (current.room.equals("house")){
+            room.setText("Representative");
+        } else {
+            room.setText("Senator");
         }
 
         String styledText = "<u>Commitees</u>";
@@ -113,9 +134,16 @@ public class DetailActivity extends Activity {
         billsText.setText(Html.fromHtml(styledText), TextView.BufferType.SPANNABLE);
 
         Log.d("T", "TRYING TO SEND TO WATCH");
+        Log.d("JSON:", response.toString());
+        try {
+            response.put("CAT_NAME", Integer.toString(position));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Log.d("JSON:", response.toString());
 
         Intent sendIntent = new Intent(getBaseContext(), PhoneToWatchService.class);
-        sendIntent.putExtra("CAT_NAME", Integer.toString(position));
+        sendIntent.putExtra("JSON", response.toString());
         startService(sendIntent);
 
         Log.d("T", "FINISHED SENDING TO WATCH");
@@ -132,7 +160,6 @@ public class DetailActivity extends Activity {
                 String[] commitees;
                 String[] commiteeIDs;
                 try {
-                    Log.d("JSON FROM CONGRESS", response.toString());
                     int count = (int) response.getInt("count");
                     commitees = new String[count];
                     commiteeIDs = new String[count];
@@ -161,7 +188,6 @@ public class DetailActivity extends Activity {
     }
 
     public void getBills(final Context context, String sponsor){
-        Log.d("SPONSOR", sponsor);
         RequestParams params = new RequestParams();
         params.put("apikey", "204dda0dd1c441cbbaf7514e87ac1743");
         params.put("sponsor_id", sponsor);
@@ -171,18 +197,31 @@ public class DetailActivity extends Activity {
                 Log.d("SUCCESS", response.toString());
                 String[] bills;
                 try {
-                    Log.d("JSON FROM CONGRESS", response.toString());
                     int count = (int) response.getInt("count");
                     bills = new String[count];
                     JSONArray results = response.getJSONArray("results");
-                    Log.d("THERE ARE THIS MANY BILLS", Integer.toString(count));
                     for (int i = 0; i < count; i++) {
                         JSONObject bill = results.getJSONObject(i);
                         bills[i] = bill.getString("short_title");
-                        Log.d("CHECK OUT THIS BILL", bills[i]);
                     }
                     ListView billsLV = (ListView) findViewById(R.id.billListView);
-                    ArrayAdapter<String> billsAdapter = new ArrayAdapter<String>(DetailActivity.this, android.R.layout.simple_list_item_1, android.R.id.text1, bills);
+                    //remove null from array
+
+                    List<String> list = new ArrayList<String>();
+
+                    for(String s : bills) {
+                        if(s != null && s.length() > 0) {
+                            if (s.equals("null")){
+                                Log.d("IT's Equal", "EQUAL");
+                            } else {
+                                list.add(s);
+                            }
+                        }
+                    }
+
+                    String[] newBills = list.toArray(new String[list.size()]);
+
+                    ArrayAdapter<String> billsAdapter = new ArrayAdapter<String>(DetailActivity.this, android.R.layout.simple_list_item_1, android.R.id.text1, newBills);
                     billsLV.setAdapter(billsAdapter);
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -196,6 +235,12 @@ public class DetailActivity extends Activity {
                 Log.d("FAILURE", errorResponse.toString());
             }
         });
+    }
+
+    private static Asset createAssetFromBitmap(Bitmap bitmap) {
+        final ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteStream);
+        return Asset.createFromBytes(byteStream.toByteArray());
     }
 
 
